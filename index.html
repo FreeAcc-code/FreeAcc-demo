@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>FreeAcc Demo </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        "Helvetica Neue", Arial, "Noto Sans", "PingFang SC", "Hiragino Sans GB",
+        "Microsoft YaHei", sans-serif;
+      background-color: #fafafa;
+      color: #222;
+      line-height: 1.6;
+    }
+
+    a {
+      color: #0066cc;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    header {
+      background: linear-gradient(135deg, #121212, #303f9f);
+      color: #fff;
+      padding: 60px 10% 40px 10%;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0 0 10px 0;
+      font-size: 2.4rem;
+      letter-spacing: 0.04em;
+    }
+
+    header h2 {
+      margin: 0 0 20px 0;
+      font-size: 1.2rem;
+      font-weight: 400;
+      opacity: 0.9;
+    }
+
+    header .meta {
+      font-size: 0.95rem;
+      opacity: 0.9;
+      margin-bottom: 10px;
+    }
+
+    header .authors {
+      margin-top: 6px;
+    }
+
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 30px 10% 60px 10%;
+      box-sizing: border-box;
+      background-color: #fafafa;
+    }
+
+    section {
+      margin-bottom: 60px;
+    }
+
+    section h2 {
+      font-size: 1.6rem;
+      margin-bottom: 15px;
+      border-left: 4px solid #303f9f;
+      padding-left: 10px;
+    }
+
+    section h3 {
+      font-size: 1.15rem;
+      margin-top: 25px;
+      margin-bottom: 8px;
+    }
+
+    .toc {
+      background-color: #ffffff;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .toc ul {
+      list-style: none;
+      margin: 0;
+      padding-left: 0;
+    }
+
+    .toc li {
+      margin-bottom: 6px;
+      font-size: 0.98rem;
+    }
+
+    .toc li a {
+      color: #333;
+    }
+
+    .toc li a:hover {
+      color: #303f9f;
+    }
+
+    .abstract-box {
+      background-color: #ffffff;
+      border-radius: 8px;
+      padding: 20px 24px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      font-size: 0.98rem;
+      text-align: justify;
+    }
+
+    .results-group {
+      background-color: #ffffff;
+      border-radius: 10px;
+      padding: 20px 22px;
+      margin-bottom: 25px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .results-group h3 {
+      margin-top: 0;
+      margin-bottom: 10px;
+    }
+
+    .audio-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+
+    .audio-block {
+      flex: 1 1 260px;
+      min-width: 240px;
+    }
+
+    /* ⭐⭐⭐ 新增：更显眼的小标题样式 ⭐⭐⭐ */
+    .audio-block-title {
+      font-size: 1.08rem;
+      font-weight: 700;
+      color: #1a237e;
+      margin-bottom: 8px;
+      padding-left: 8px;
+      border-left: 4px solid #3f51b5;
+    }
+
+    .llm-row-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #4a148c;
+      margin-bottom: 8px;
+      padding-left: 8px;
+      border-left: 4px solid #7b1fa2;
+    }
+    /* ⭐⭐⭐ END ⭐⭐⭐ */
+
+    audio {
+      width: 100%;
+      margin-bottom: 8px;
+    }
+
+    .mel-img {
+      width: 100%;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+      background-color: #f5f5f5;
+    }
+
+    .llm-row {
+      margin-top: 10px;
+      border-top: 1px dashed #ddd;
+      padding-top: 12px;
+    }
+
+    .llm-img {
+      max-width: 100%;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+      display: block;
+    }
+
+    .other-images-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+    }
+
+    .other-img-block {
+      flex: 1 1 280px;
+      min-width: 240px;
+      background-color: #ffffff;
+      border-radius: 8px;
+      padding: 10px 10px 14px 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+
+    .other-img-block img {
+      width: 100%;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+      display: block;
+    }
+
+    .other-caption {
+      margin-top: 6px;
+      font-size: 0.9rem;
+      color: #555;
+    }
+
+    footer {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px 10% 40px 10%;
+      font-size: 0.85rem;
+      color: #777;
+      border-top: 1px solid #e0e0e0;
+    }
+
+    @media (max-width: 768px) {
+      header {
+        padding: 40px 20px 30px 20px;
+      }
+      main {
+        padding: 20px 18px 40px 18px;
+      }
+    }
+</style>
+
+</head>
+<body>
+  <!-- 1. 封面及标题 -->
+  <header>
+    <h1>FREEACC: ZERO-PERMISSION EAVESDROPPING TARGETING THE EARPIECE</h1>
+    <!--<h2>副标题或简单说明（可选）</h2>
+    <div class="meta">
+      <div class="authors">作者：XXX，XXX，XXX</div>
+      <div class="affiliation">单位：XXX 实验室 / 机构</div>
+      <div class="date">日期：2026</div> -->
+    </div>
+  </header>
+
+  <main>
+    <!-- 1. 目录 -->
+    <section id="toc">
+      <h2>Table of Contents</h2>
+      <div class="toc">
+        <ul>
+          <li><a href="#abstract">1. Abstract</a></li>
+          <li><a href="#results">2. Results</a></li>
+          <li><a href="#others">3. Others</a></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 2. 摘要（保持不变：请把原摘要文本替换到下面） -->
+    <section id="abstract">
+      <h2>Abstract</h2>
+      <div class="abstract-box">
+        <!-- 在此粘贴你原始 HTML 中的摘要内容，保持其内部结构不变 -->
+        <p>Mobile users favor handset (earpiece) mode for private communication, relying on physical sound isolation to protect privacy. In this paper, we challenge this assumption by presenting , the first system to demonstrate that commodity mobile accelerometers can recover intelligible speech from the minute vibrations of the earpiece. 
+Unlike prior works restricted to high-amplitude loudspeaker scenarios, we reveal that extremely weak signals still preserve recoverable linguistic information. 
+To address the challenges of low Signal-to-Noise Ratio (SNR) and limited sampling rates, we leverage paradigms from the Voice Conversion (VC) domain to propose a practical eavesdropping framework. 
+By extracting linguistic feature from earpiece vibrations, reconstructs intelligible speech without any vocabulary limit and remains effective against unknown victims. 
+Our prototype, strictly within zero-permission constraints, operating extensive evaluations on the LibriSpeech 360-hour dataset (925 speakers) and 14 real-world volunteers. 
+Despite the low-SNR constraints of earpiece mode, achieves average Word Error Rate (WER) of 37.7% for unseen victims. 
+Furthermore, real-world experiments confirm the attack's practicality, maintaining effectiveness across 4 diverse environmental noise levels, 4 distinct phone placements, and 6 heterogeneous device models.
+We highlight this vulnerability to advocate for stricter operating system countermeasures.</p>
+      </div>
+    </section>
+
+    <!-- 3. 结果展示：5 组结果 -->
+    <section id="results">
+  <h2>Results</h2>
+
+  <!-- 结果组 1 -->
+  <div class="results-group" id="result-group-1">
+    <h3>Base Group</h3>
+    <p>Device: Samsung Galaxy S21. Environment: Laboratory setting. Device State: Handheld. Test Target: Earpiece. Reproduction Rate: 100%.</p>
+
+    <!-- Original Audio -->
+    <div class="audio-block">
+      <div class="audio-block-title">Original Audio</div>
+      <audio controls>
+        <source src="assets/audio/audio_clip_210.wav" type="audio/wav" />
+      </audio>
+      <p style="background:#fff3cd; padding:8px 12px; border-radius:6px; font-weight:600;"> Text: eyes are turning rolling upon this very scene. </p>
+      <img
+        class="mel-img"
+        src="assets/images/210_original_mel.png"
+        alt="Original Audio Mel"
+      />
+    </div>
+
+    <!-- Acc STFT 图 -->
+    <div class="audio-block">
+      <div class="audio-block-title">Acc STFT</div>
+      <!-- 请将路径替换为你的真实 STFT 图片路径 -->
+      <img
+        class="mel-img"
+        src="assets/images/210_acc.png"
+        alt="Acc STFT"
+      />
+    </div>
+
+    <!-- Rebuild Audio -->
+    <div class="audio-block">
+      <div class="audio-block-title">Rebuild Audio</div>
+      <audio controls>
+        <source src="assets/audio/audio_recover_210.wav" type="audio/wav" />
+      </audio>
+      <p style="background:#fdecea; padding:8px 12px; border-radius:6px; font-weight:600; color:#c62828;"> ASR: eyes are turning monaining upon this very seer. </p>
+      <img
+        class="mel-img"
+        src="assets/images/210_rebuild_mel.png"
+        alt="Rebuild Audio Mel"
+      />
+    </div>
+
+    <!-- LLM Semantic Repair Schematic -->
+    <div class="llm-row">
+      <div class="llm-row-title">LLM Semantic Repair Schematic and Test Metrics</div>
+      <img
+        class="llm-img"
+        src="assets/images/210LLM.png"
+        alt="示例 1 LLM Semantic Repair Schematic"
+      />
+      <img
+        class="llm-img"
+        src="assets/images/210.png"
+        alt="示例 2 LLM Semantic Repair Schematic"
+      />
+      <p style="background:#fdecea; padding:8px 12px; border-radius:6px; font-weight:600; color:#c62828;"> LLM Semantic Repair: Eyes are turning, rolling upon this very scene. </p>
+    </div>
+  </div>
+
+  <!-- 结果组 2 -->
+  <div class="results-group" id="result-group-2">
+    <h3>Playback Mode Control Group</h3>
+    <p>Device: Samsung Galaxy S21. Environment: Laboratory setting. Device State: Handheld. Test Target: Loudspeaker. Reproduction Rate: 100%.</p>
+
+    <!-- Original Audio -->
+    <div class="audio-block">
+      <div class="audio-block-title">Original Audio</div>
+      <audio controls>
+        <source src="assets/audio/audio_clip_424.wav" type="audio/wav" />
+      </audio>
+      <p style="background:#fff3cd; padding:8px 12px; border-radius:6px; font-weight:600;"> Text: when chichi saw her he came into her tree and asked her what had become of him. </p>
+      <img
+        class="mel-img"
+        src="assets/images/424_o.png"
+        alt="示例 2 Original Audio Mel 频谱"
+      />
+    </div>
+
+    <!-- Acc STFT 图 -->
+    <div class="audio-block">
+      <div class="audio-block-title">Acc STFT</div>
+      <img
+        class="mel-img"
+        src="assets/images/424_acc.png"
+        alt="示例 2 Acc STFT"
+      />
+    </div>
+
+    <!-- Rebuild Audio -->
+    <div class="audio-block">
+      <div class="audio-block-title">Rebuild Audio</div>
+      <audio controls>
+        <source src="assets/audio/audio_recover_424.wav" type="audio/wav" />
+      </audio>
+      <p style="background:#fdecea; padding:8px 12px; border-radius:6px; font-weight:600; color:#c62828;"> ASR: when chichi saw her he came into her too and asked pro what had become of him. </p>
+      <img
+        class="mel-img"
+        src="assets/images/424_r.png"
+        alt="示例 2 Rebuild Audio Mel 频谱"
+      />
+    </div>
+
+    <!-- LLM Semantic Repair Schematic -->
+    <div class="llm-row">
+      <div class="llm-row-title">Test Metrics and LLM Semantic Repair Results</div>
+      <img
+        class="llm-img"
+        src="assets/images/424.png"
+        alt="示例 2 LLM Semantic Repair Schematic"
+      />
+      <p style="background:#fdecea; padding:8px 12px; border-radius:6px; font-weight:600; color:#c62828;"> LLM Semantic Repair: When Chichester saw her, he came into her room and asked her what had become of him. </p>
+    </div>
+  </div>
+
+  <!-- 结果组 3 -->
+  <div class="results-group" id="result-group-3">
+    <h3>Earpiece Volume Control Group</h3>
+    <p>Device: Samsung Galaxy S21. Environment: Laboratory setting. Device State: Handheld. Test Target: Earpiece. Reproduction Rate: 50%.</p>
+
+    <!-- Original Audio -->
+    <div class="audio-block">
+      <div class="audio-block-title">Original Audio</div>
+      <audio controls>
+        <source src="assets/audio/audio_clip_20.wav" type="audio/wav" />
+      </audio>
+      <p style="background:#fff3cd; padding:8px 12px; border-radius:6px; font-weight:600;"> Text: that he did not hear it and in a minute tom had the pig tucked under his arm and was running back home with it. </p>
+      <img
+        class="mel-img"
+        src="assets/images/20_o.png"
+        alt="示例 3 Original Audio Mel 频谱"
+      />
+    </div>
+
+    <!-- Acc STFT 图 -->
+    <div class="audio-block">
+      <div class="audio-block-title">Acc STFT</div>
+      <img
+        class="mel-img"
+        src="assets/images/20_acc.png"
+        alt="示例 3 Acc STFT"
+      />
+    </div>
+
+    <!-- Rebuild Audio -->
+    <div class="audio-block">
+      <div class="audio-block-title">Rebuild Audio</div>
+      <audio controls>
+        <source src="assets/audio/audio_recover_20.wav" type="audio/wav"/>
+      </audio>
+      <p style="background:#fdecea; padding:8px 12px; border-radius:6px; font-weight:600; color:#c62828;"> ASR:becky did not hear it and in a minute tom had the cape tucked under his eye and his wand back upon his head. </p>
+      <img
+        class="mel-img"
+        src="assets/images/20_r.png"
+        alt="示例 3 Rebuild Audio Mel 频谱"
+      />
+    </div>
+
+    <!-- LLM Semantic Repair Schematic -->
+    <div class="llm-row">
+      <div class="llm-row-title">Test Metrics and LLM Semantic Repair Results</div>
+      <img
+        class="llm-img"
+        src="assets/images/20.png"
+        alt="示例 3 LLM Semantic Repair Schematic"
+      />
+      <p style="background:#fdecea; padding:8px 12px; border-radius:6px; font-weight:600; color:#c62828;"> LLM Semantic Repair: Becky did not hear. And in a moment Tom had the cap tucked under his arm and his hand back upon his head. </p>
+    </div>
+  </div>
+
+  <!-- 结果组 4 -->
+  <div class="results-group" id="result-group-4">
+    <h3>Phone Type Control Group</h3>
+    <p>Device: Oneplus 8T. Environment: Laboratory setting. Device State: Handheld. Test Target: Earpiece. Reproduction Rate: 100%.</p>
+
+    <!-- Original Audio -->
+    <div class="audio-block">
+      <div class="audio-block-title">Original Audio</div>
+      <audio controls>
+        <source src="assets/audio/audio_clip_202.wav" type="audio/wav" />
+      </audio>
+      <p style="background:#fff3cd; padding:8px 12px; border-radius:6px; font-weight:600;"> Text: these also are the lessons of our new world while how little the new after all how much the old old world. </p>
+      <img
+        class="mel-img"
+        src="assets/images/202_o.png"
+        alt="示例 4 Original Audio Mel 频谱"
+      />
+    </div>
+
+    <!-- Acc STFT 图 -->
+    <div class="audio-block">
+      <div class="audio-block-title">Acc STFT</div>
+      <img
+        class="mel-img"
+        src="assets/images/202_acc.png"
+        alt="示例 4 Acc STFT"
+      />
+    </div>
+
+    <!-- Rebuild Audio -->
+    <div class="audio-block">
+      <div class="audio-block-title">Rebuild Audio</div>
+      <audio controls>
+        <source src="assets/audio/audio_recover_202.wav" type="audio/wav" />
+      </audio>
+      <p style="background:#fdecea; padding:8px 12px; border-radius:6px; font-weight:600; color:#c62828;"> ASR: these also are the lessons of our new word know how niffle the beauty after all and luxe the ever old worth. </p>
+      <img
+        class="mel-img"
+        src="assets/images/202_r.png"
+        alt="示例 4 Rebuild Audio Mel 频谱"
+      />
+    </div>
+
+    <!-- LLM Semantic Repair Schematic -->
+    <div class="llm-row">
+      <div class="llm-row-title">Test Metrics and LLM Semantic Repair Results</div>
+      <img
+        class="llm-img"
+        src="assets/images/202.png"
+        alt="示例 4 LLM Semantic Repair Schematic"
+      />
+      <p style="background:#fdecea; padding:8px 12px; border-radius:6px; font-weight:600; color:#c62828;"> LLM Semantic Repair: These also are the lessons of our new world: know how little the beauty, after all, and love the everlasting worth. </p>
+    </div>
+  </div>
+
+  <!-- 结果组 5 -->
+  <div class="results-group" id="result-group-5">
+    <h3>Ambient Noise Control Group</h3>
+    <p>Device: Samsung Galaxy S21. Environment: Street-side. Device State: Handheld. Test Target: Earpiece. Reproduction Rate: 100%.</p>
+
+    <!-- Original Audio -->
+    <div class="audio-block">
+      <div class="audio-block-title">Original Audio</div>
+      <audio controls>
+        <source src="assets/audio/audio_clip_550.wav" type="audio/wav" />
+      </audio>
+      <p style="background:#fff3cd; padding:8px 12px; border-radius:6px; font-weight:600;"> Text:thats ten miles away said the doctor. </p>
+      <img
+        class="mel-img"
+        src="assets/images/550_o.png"
+        alt="示例 5 Original Audio Mel 频谱"
+      />
+    </div>
+
+    <!-- Acc STFT 图 -->
+    <div class="audio-block">
+      <div class="audio-block-title">Acc STFT</div>
+      <img
+        class="mel-img"
+        src="assets/images/550_acc.png"
+        alt="示例 5 Acc STFT"
+      />
+    </div>
+
+    <!-- Rebuild Audio -->
+    <div class="audio-block">
+      <div class="audio-block-title">Rebuild Audio</div>
+      <audio controls>
+        <source src="assets/audio/audio_recover_550.wav" type="audio/wav"/>
+      </audio>
+      <p style="background:#fdecea; padding:8px 12px; border-radius:6px; font-weight:600; color:#c62828;"> ASR:thats ten mice away said the vector. </p>
+      <img
+        class="mel-img"
+        src="assets/images/550_r.png"
+        alt="示例 5 Rebuild Audio Mel 频谱"
+      />
+      <p style="background:#fdecea; padding:8px 12px; border-radius:6px; font-weight:600; color:#c62828;"> LLM Semantic Repair:“ That’s ten miles away,” said the doctor. </p>
+    </div>
+
+    <!-- LLM Semantic Repair Schematic -->
+    <div class="llm-row">
+      <div class="llm-row-title">Test Metrics and LLM Semantic Repair Results</div>
+      <img
+        class="llm-img"
+        src="assets/images/550.png"
+        alt="示例 5 LLM Semantic Repair Schematic"
+      />
+    </div>
+  </div>
+</section>
+
+
+    <!-- 4. 其他：贴几张图（参考 FreeVC-demo 的风格） -->
+    <section id="others">
+      <h2>Others</h2>
+      <!--<p>这里可以展示系统架构、更多可视化结果、消融实验示意等。</p> -->
+
+      <div class="other-images-grid">
+        <div class="other-img-block">
+          <img src="assets/images/Dataset.png" alt="图 1 示例" />
+          <div class="other-caption"></div>
+        </div>
+
+        <div class="other-img-block">
+          <img src="assets/images/Ablation_Study.png" alt="图 2 示例" />
+          <div class="other-caption"></div>
+        </div>
+
+        <div class="other-img-block">
+          <img src="assets/images/Comprehensive_Performance.png" alt="图 3 示例" />
+          <div class="other-caption"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!--<footer>
+    <div>© 2026 项目名称（可替换）。本页面仅用于研究演示。</div>
+  </footer> -->
+</body>
+</html>
